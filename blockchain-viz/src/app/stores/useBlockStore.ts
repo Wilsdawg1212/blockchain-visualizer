@@ -127,7 +127,7 @@ export const useBlocksStore = create<BlocksState>()(
       currentPosition: 0,
       isLiveMode: true,
       windowSize: 50, // Show 50 blocks around current position
-      maxBlocks: 1000, // Store up to 1000 blocks total
+      maxBlocks: 200, // Store up to 1000 blocks total
       isLoadingHistorical: false,
       pushBlock: rawBlock =>
         set(s => {

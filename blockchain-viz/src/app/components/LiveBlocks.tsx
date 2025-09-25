@@ -51,8 +51,22 @@ export default function LiveBlocks() {
 
   const [searchBlock, setSearchBlock] = React.useState('');
   const [isNavigating, setIsNavigating] = React.useState(false);
-  const blocks = getVisibleBlocks().reverse(); // Reverse order so newer blocks come from the right
   const tip = tipNumber;
+
+  const visible = getVisibleBlocks();
+
+  const blocks = React.useMemo(() => {
+    const seen = new Set<string>(); // use hash to survive reorgs; fall back to number if needed
+    const unique: typeof visible = [];
+    for (const b of visible) {
+      const k = b.hash ?? String(b.number);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      unique.push(b);
+    }
+    return unique.reverse();
+  }, [visible]);
+
 
   const handleSearch = async () => {
     const blockNum = parseInt(searchBlock);
