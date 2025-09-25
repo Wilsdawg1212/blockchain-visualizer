@@ -7,7 +7,6 @@ import {
   Box,
   Card,
   CardContent,
-  Chip,
   LinearProgress,
   Stack,
   Typography,
@@ -26,15 +25,8 @@ import {
   Search,
   Refresh,
 } from '@mui/icons-material';
-import { formatGwei } from 'viem';
 import { uiBlockToRawBlock } from '../stores/useBlockStore';
-import { Block } from './Block/Block';
-
-const CONFIRMATIONS_TARGET = 5;
-
-function fmtTime(ms: number) {
-  return new Date(ms).toLocaleTimeString();
-}
+import Block from './Block/Block';
 
 export default function LiveBlocks() {
   useLiveBlocks();
@@ -52,7 +44,6 @@ export default function LiveBlocks() {
 
   const [searchBlock, setSearchBlock] = React.useState('');
   const [isNavigating, setIsNavigating] = React.useState(false);
-  const tip = tipNumber;
 
   const visible = getVisibleBlocks();
 
@@ -67,7 +58,6 @@ export default function LiveBlocks() {
     }
     return unique.reverse();
   }, [visible]);
-
 
   const handleSearch = async () => {
     const blockNum = parseInt(searchBlock);
@@ -403,7 +393,7 @@ export default function LiveBlocks() {
             >
               {/* L2 Blocks - reversed order so newer blocks come from the right */}
               {blocks.map((b, index) => {
-                const conf = Math.max(0, tip - b.number);
+                const conf = Math.max(0, tipNumber - b.number);
                 const isCurrentBlock = b.number === currentPosition;
 
                 // Convert UI block back to raw block for display (string -> BigInt)
@@ -413,7 +403,14 @@ export default function LiveBlocks() {
                 const blockOffset = (index - currentBlockIndex) * 220; // 220px spacing between blocks
 
                 return (
-                  <Block block={b.hash} />
+                  <Block
+                    key={b.hash} // <-- key belongs here, not inside child
+                    block={b}
+                    isCurrentBlock={isCurrentBlock}
+                    confirmations={conf}
+                    offsetPx={blockOffset}
+                    rawBlock={rawBlock}
+                  />
                 );
               })}
             </Box>

@@ -74,7 +74,7 @@ interface BlocksState {
   windowSize: number; // How many blocks to keep around current position
   maxBlocks: number; // Maximum total blocks to store
   isLoadingHistorical: boolean; // Loading state for historical blocks
-  pushBlock: (b: RawBlock) => void; // Accept raw block with BigInt values
+  pushBlock: (b: RawBlock, tipNumber?: number) => void; // Accept raw block with BigInt values and optional tip number
   setTip: (n: number) => void;
   setCurrentPosition: (position: number) => void;
   setLiveMode: (isLive: boolean) => void;
@@ -129,10 +129,13 @@ export const useBlocksStore = create<BlocksState>()(
       windowSize: 50, // Show 50 blocks around current position
       maxBlocks: 200, // Store up to 1000 blocks total
       isLoadingHistorical: false,
-      pushBlock: rawBlock =>
+      pushBlock: (rawBlock, providedTipNumber) =>
         set(s => {
           // Convert raw block to UI block (BigInt -> string)
           const b = rawBlockToUiBlock(rawBlock);
+
+          // Use provided tip number or fall back to store's tip number
+          const tipNum = providedTipNumber ?? s.tipNumber;
 
           // avoid duplicates (same hash)
           if (s.blocks.length && s.blocks[0].hash === b.hash) return s;
@@ -145,6 +148,7 @@ export const useBlocksStore = create<BlocksState>()(
               blocks:
                 next.length > s.maxBlocks ? next.slice(0, s.maxBlocks) : next,
               currentPosition: b.number,
+              tipNumber: tipNum, // Update tip number here too
             };
           }
 
@@ -152,6 +156,7 @@ export const useBlocksStore = create<BlocksState>()(
           return {
             blocks:
               next.length > s.maxBlocks ? next.slice(0, s.maxBlocks) : next,
+            tipNumber: tipNum, // Update tip number here too
           };
         }),
       setTip: n => set({ tipNumber: n }),

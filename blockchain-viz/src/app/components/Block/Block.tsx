@@ -1,14 +1,57 @@
 'use client';
 
+import * as React from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  LinearProgress,
+  Stack,
+  Typography,
+  Button,
+  Switch,
+  FormControlLabel,
+  IconButton,
+  TextField,
+  InputAdornment,
+  CircularProgress,
+} from '@mui/material';
+import { formatGwei } from 'viem';
+import { UiBlock, RawBlock } from '../../stores/useBlockStore';
 
 
+const CONFIRMATIONS_TARGET = 5;
+
+type BlockProps = {
+  block: UiBlock;
+  isCurrentBlock: boolean;
+  confirmations: number;
+  offsetPx: number;
+  rawBlock: RawBlock;
+};
+
+
+function fmtTime(ms: number) {
+  return new Date(ms).toLocaleTimeString();
+}
+
+
+export default function Block({
+  block,
+  isCurrentBlock,
+  confirmations,
+  offsetPx,
+  rawBlock,
+}: BlockProps) {
+return (
 <Box
-key={b.hash}
+key={block.hash}
 sx={{
   position: 'absolute',
   left: '50%',
   top: '50%',
-  transform: `translate(-50%, -50%) translateX(${blockOffset}px)`,
+  transform: `translate(-50%, -50%) translateX(${offsetPx}px)`,
   zIndex: 2,
   transition: 'transform 0.3s ease-in-out',
 }}
@@ -50,7 +93,7 @@ sx={{
       fontWeight: 'bold',
     }}
   >
-    {b.number}
+    {block.number}
   </Box>
 
   {/* Current Block Indicator */}
@@ -98,7 +141,7 @@ sx={{
         mb: 1,
       }}
     >
-      {b.hash.slice(0, 8)}...{b.hash.slice(-6)}
+      {block.hash.slice(0, 8)}...{block.hash.slice(-6)}
     </Typography>
 
     {/* Transaction Count */}
@@ -111,7 +154,7 @@ sx={{
         mb: 1,
       }}
     >
-      {b.txCount} tx
+      {block.txCount} tx
     </Typography>
 
     {/* Gas Used */}
@@ -149,10 +192,10 @@ sx={{
     </Typography>
 
     {/* L1 Block Info */}
-    {b.l1Number && (
+    {block.l1Number && (
       <Box sx={{ textAlign: 'center', mb: 1 }}>
         <Chip
-          label={`L1 #${b.l1Number}`}
+          label={`L1 #${block.l1Number}`}
           size="small"
           sx={{
             backgroundColor: isCurrentBlock
@@ -170,11 +213,11 @@ sx={{
     {/* Confirmations */}
     <Box sx={{ textAlign: 'center', mb: 1 }}>
       <Chip
-        label={`${conf} confs`}
+        label={`${confirmations} confs`}
         size="small"
         sx={{
           backgroundColor:
-            conf >= CONFIRMATIONS_TARGET
+            confirmations >= CONFIRMATIONS_TARGET
               ? isCurrentBlock
                 ? '#4a148c'
                 : '#2a2a2a'
@@ -201,8 +244,9 @@ sx={{
         mt: 0.5,
       }}
     >
-      {fmtTime(b.timestampMs)}
+      {fmtTime(block.timestampMs)}
     </Typography>
   </CardContent>
 </Card>
 </Box>
+)};

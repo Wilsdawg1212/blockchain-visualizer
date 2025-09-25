@@ -25,7 +25,6 @@ export default function useLiveBlocks(pollMs = 2000) {
 
     const onBlock = async (blk: AnyBlock) => {
       const number = Number(blk.number);
-      setTip(number);
 
       // Fetch L1 origin data for this L2 block
       let l1Data = {};
@@ -52,7 +51,9 @@ export default function useLiveBlocks(pollMs = 2000) {
         ...l1Data,
       };
 
-      pushBlock(rawBlock);
+      // Update tip number and push block with the correct tip number
+      setTip(number);
+      pushBlock(rawBlock, number);
     };
 
     // Prefer WebSocket if available
