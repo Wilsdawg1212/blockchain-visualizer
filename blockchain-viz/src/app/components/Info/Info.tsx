@@ -1,22 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  LinearProgress,
-  Stack,
-  Typography,
-  Button,
-  Switch,
-  FormControlLabel,
-  IconButton,
-  TextField,
-  InputAdornment,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 export default function Info() {
   return (

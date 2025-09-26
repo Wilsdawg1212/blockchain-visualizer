@@ -1,22 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  LinearProgress,
-  Stack,
-  Typography,
-  Button,
-  Switch,
-  FormControlLabel,
-  IconButton,
-  TextField,
-  InputAdornment,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
 import { formatGwei } from 'viem';
 import { UiBlock, RawBlock } from '../../stores/useBlockStore';
 

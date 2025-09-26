@@ -13,21 +13,29 @@ import {
   Button,
 } from '@mui/material';
 import { Search, Refresh } from '@mui/icons-material';
-import { useBlocksStore } from '../stores/useBlockStore';
+import { useBlocksStore, UiBlock } from '../stores/useBlockStore';
 
 export default function SimpleBlockViewer() {
-  const { navigateToBlock, isLoadingHistorical, currentPosition, blocks } = useBlocksStore();
+  const { navigateToBlock, isLoadingHistorical, currentPosition, blocks } =
+    useBlocksStore();
   const [searchBlock, setSearchBlock] = React.useState('');
   const [isNavigating, setIsNavigating] = React.useState(false);
-  const [searchedBlock, setSearchedBlock] = React.useState<any>(null);
-  const [lastSearchedNumber, setLastSearchedNumber] = React.useState<number | null>(null);
+  const [searchedBlock, setSearchedBlock] = React.useState<UiBlock | null>(
+    null
+  );
+  const [lastSearchedNumber, setLastSearchedNumber] = React.useState<
+    number | null
+  >(null);
 
   // Watch for when the searched block appears in the store
   React.useEffect(() => {
     if (lastSearchedNumber !== null) {
       const foundBlock = blocks.find(b => b.number === lastSearchedNumber);
       if (foundBlock) {
-        console.log('🎯 SimpleBlockViewer - Block found in store after loading:', foundBlock);
+        console.log(
+          '🎯 SimpleBlockViewer - Block found in store after loading:',
+          foundBlock
+        );
         setSearchedBlock(foundBlock);
         setLastSearchedNumber(null); // Reset to avoid re-triggering
       }
@@ -37,17 +45,28 @@ export default function SimpleBlockViewer() {
   const handleSearch = async () => {
     const blockNum = parseInt(searchBlock);
     if (!isNaN(blockNum)) {
-      console.log('🔍 SimpleBlockViewer - Starting search for block:', blockNum);
+      console.log(
+        '🔍 SimpleBlockViewer - Starting search for block:',
+        blockNum
+      );
       setIsNavigating(true);
       try {
-        console.log('🚀 SimpleBlockViewer - Calling navigateToBlock with:', blockNum);
+        console.log(
+          '🚀 SimpleBlockViewer - Calling navigateToBlock with:',
+          blockNum
+        );
         await navigateToBlock(blockNum);
-        console.log('✅ SimpleBlockViewer - navigateToBlock completed for block:', blockNum);
-        
+        console.log(
+          '✅ SimpleBlockViewer - navigateToBlock completed for block:',
+          blockNum
+        );
+
         // Set the searched number so the useEffect can watch for it
         setLastSearchedNumber(blockNum);
-        console.log('🔍 SimpleBlockViewer - Set lastSearchedNumber to:', blockNum);
-        
+        console.log(
+          '🔍 SimpleBlockViewer - Set lastSearchedNumber to:',
+          blockNum
+        );
       } catch (error) {
         console.error('❌ SimpleBlockViewer - Error during navigation:', error);
       } finally {
@@ -210,7 +229,8 @@ export default function SimpleBlockViewer() {
               Is loading: {isLoadingHistorical ? 'Yes' : 'No'}
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              Searched block found: {searchedBlock ? `Block #${searchedBlock.number}` : 'None'}
+              Searched block found:{' '}
+              {searchedBlock ? `Block #${searchedBlock.number}` : 'None'}
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
               Block numbers in store: {blocks.map(b => b.number).join(', ')}
@@ -241,7 +261,8 @@ export default function SimpleBlockViewer() {
                 <strong>Parent Hash:</strong> {searchedBlock.parentHash}
               </Typography>
               <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-                <strong>Timestamp:</strong> {new Date(searchedBlock.timestampMs).toLocaleString()}
+                <strong>Timestamp:</strong>{' '}
+                {new Date(searchedBlock.timestampMs).toLocaleString()}
               </Typography>
               <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
                 <strong>Transaction Count:</strong> {searchedBlock.txCount}
