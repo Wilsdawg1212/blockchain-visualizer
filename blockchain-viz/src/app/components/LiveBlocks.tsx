@@ -47,7 +47,32 @@ export default function LiveBlocks() {
 
   const visible = getVisibleBlocks();
 
+  // Debug: Log tip number changes
+  React.useEffect(() => {
+    console.log('Tip number changed to:', tipNumber);
+  }, [tipNumber]);
+
+  // Debug: Log visible blocks changes
+  React.useEffect(() => {
+    console.log(
+      '🔍 LiveBlocks - visible blocks changed:',
+      visible.map(b => b.number),
+      'count:',
+      visible.length
+    );
+    console.log('🔍 LiveBlocks - current state:', {
+      isLiveMode,
+      currentPosition,
+      tipNumber,
+      isLoadingHistorical,
+    });
+  }, [visible, isLiveMode, currentPosition, tipNumber, isLoadingHistorical]);
+
   const blocks = React.useMemo(() => {
+    console.log(
+      '🔄 Processing visible blocks for display:',
+      visible.map(b => b.number)
+    );
     const seen = new Set<string>(); // use hash to survive reorgs; fall back to number if needed
     const unique: typeof visible = [];
     for (const b of visible) {
@@ -56,18 +81,29 @@ export default function LiveBlocks() {
       seen.add(k);
       unique.push(b);
     }
-    return unique.reverse();
+    const reversed = unique.reverse();
+    console.log(
+      '🎨 Final blocks for display:',
+      reversed.map(b => b.number)
+    );
+    return reversed;
   }, [visible]);
 
   const handleSearch = async () => {
     const blockNum = parseInt(searchBlock);
     if (!isNaN(blockNum)) {
+      console.log('🔍 Starting search for block:', blockNum);
       setIsNavigating(true);
       try {
+        console.log('🚀 Calling navigateToBlock with:', blockNum);
         await navigateToBlock(blockNum);
+        console.log('✅ navigateToBlock completed for block:', blockNum);
+      } catch (error) {
+        console.error('❌ Error during navigation:', error);
       } finally {
         setIsNavigating(false);
         setSearchBlock('');
+        console.log('🏁 Search completed, navigation state reset');
       }
     }
   };
@@ -395,6 +431,13 @@ export default function LiveBlocks() {
               {blocks.map((b, index) => {
                 const conf = Math.max(0, tipNumber - b.number);
                 const isCurrentBlock = b.number === currentPosition;
+
+                // Debug: Log confirmation calculation
+                if (index < 2) {
+                  console.log(
+                    `Block ${b.number}: tip=${tipNumber}, conf=${conf}`
+                  );
+                }
 
                 // Convert UI block back to raw block for display (string -> BigInt)
                 const rawBlock = uiBlockToRawBlock(b);

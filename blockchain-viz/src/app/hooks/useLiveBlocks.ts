@@ -24,6 +24,17 @@ export default function useLiveBlocks(pollMs = 2000) {
     let unwatch: (() => void) | undefined;
 
     const onBlock = async (blk: AnyBlock) => {
+      // Defensive check for undefined/null block
+      if (!blk || typeof blk !== 'object') {
+        console.error('❌ onBlock received invalid block data:', blk);
+        return;
+      }
+
+      if (blk.number === undefined || blk.number === null) {
+        console.error('❌ onBlock received block without number:', blk);
+        return;
+      }
+
       const number = Number(blk.number);
 
       // Fetch L1 origin data for this L2 block
@@ -51,9 +62,8 @@ export default function useLiveBlocks(pollMs = 2000) {
         ...l1Data,
       };
 
-      // Update tip number and push block with the correct tip number
       setTip(number);
-      pushBlock(rawBlock, number);
+      pushBlock(rawBlock);
     };
 
     // Prefer WebSocket if available
@@ -61,13 +71,24 @@ export default function useLiveBlocks(pollMs = 2000) {
       try {
         unwatch = wsClient.watchBlocks({
           includeTransactions: false,
-          onBlock: block => onBlock(block as AnyBlock),
-          onError: () => startPolling(),
+          onBlock: block => {
+            console.log(
+              '🔌 WebSocket received block:',
+              block ? `Block #${block.number}` : 'null/undefined'
+            );
+            onBlock(block as AnyBlock);
+          },
+          onError: error => {
+            console.error('❌ WebSocket error:', error);
+            startPolling();
+          },
         });
-      } catch {
+      } catch (error) {
+        console.error('❌ Failed to start WebSocket:', error);
         startPolling();
       }
     } else {
+      console.log('📡 WebSocket not available, starting HTTP polling');
       startPolling();
     }
 
@@ -82,12 +103,24 @@ export default function useLiveBlocks(pollMs = 2000) {
       const tick = async () => {
         try {
           const n = await httpClient.getBlockNumber();
+          console.log('📡 Polling for block number:', n);
+
           const b = (await httpClient.getBlock({
             blockNumber: n,
           })) as unknown as AnyBlock;
-          onBlock(b);
+
+          console.log(
+            '📦 Received block from API:',
+            b ? `Block #${b.number}` : 'null/undefined'
+          );
+
+          if (b) {
+            onBlock(b);
+          } else {
+            console.error('❌ API returned null/undefined block');
+          }
         } catch (e) {
-          console.error('poll error', e);
+          console.error('❌ Poll error:', e);
         } finally {
           stopPoll.current = setTimeout(tick, pollMs);
         }
