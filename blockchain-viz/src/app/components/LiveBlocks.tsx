@@ -223,7 +223,58 @@ export default function LiveBlocks() {
           Base Blockchain Visualizer
         </Typography>
 
-        <Stack direction="row" spacing={2} alignItems="center">
+        {/* Desktop Header Controls */}
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          sx={{ display: { xs: 'none', md: 'flex' } }}
+        >
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isLiveMode}
+                onChange={e => setLiveMode(e.target.checked)}
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#9c27b0',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#9c27b0',
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography sx={{ color: '#e0e0e0' }}>
+                {isLiveMode ? 'Live Mode' : 'Historical Mode'}
+              </Typography>
+            }
+          />
+
+          <Button
+            variant="outlined"
+            onClick={reset}
+            startIcon={<Refresh />}
+            sx={{
+              borderColor: '#9c27b0',
+              color: '#9c27b0',
+              '&:hover': {
+                borderColor: '#ba68c8',
+                backgroundColor: 'rgba(156, 39, 176, 0.1)',
+              },
+            }}
+          >
+            Reset
+          </Button>
+        </Stack>
+
+        {/* Mobile Header Controls */}
+        <Stack
+          spacing={2}
+          alignItems="center"
+          sx={{ display: { xs: 'flex', md: 'none' } }}
+        >
           <FormControlLabel
             control={
               <Switch
@@ -274,20 +325,43 @@ export default function LiveBlocks() {
         }}
       >
         <CardContent>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            flexWrap="wrap"
+          {/* Desktop Layout */}
+          <Box
+            sx={{
+              width: '100%',
+              position: 'relative',
+              minHeight: '40px',
+              display: { xs: 'none', md: 'flex' },
+              alignItems: 'center',
+            }}
           >
+            {/* Left side - Current Position */}
             <Typography
-              variant="subtitle2"
-              sx={{ minWidth: 'fit-content', color: '#e0e0e0' }}
+              variant="h6"
+              sx={{
+                color: '#e0e0e0',
+                fontWeight: 'bold',
+                position: 'absolute',
+                left: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+              }}
             >
               Current Position: #{currentPosition}
             </Typography>
 
-            <Stack direction="row" spacing={1}>
+            {/* Center - Navigation Arrows */}
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
               <IconButton
                 onClick={() => handleNavigateRelative('prev')}
                 disabled={isNavigating || isLoadingHistorical}
@@ -311,6 +385,7 @@ export default function LiveBlocks() {
               </IconButton>
             </Stack>
 
+            {/* Right side - Search Bar */}
             <TextField
               size="small"
               placeholder="Block number..."
@@ -350,6 +425,111 @@ export default function LiveBlocks() {
               }}
               sx={{
                 minWidth: '200px',
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                '& .MuiInputBase-input': {
+                  color: '#e0e0e0',
+                },
+                '& .MuiInputBase-input::placeholder': {
+                  color: '#a0a0a0',
+                  opacity: 1,
+                },
+              }}
+            />
+          </Box>
+
+          {/* Mobile Layout */}
+          <Stack
+            spacing={2}
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              width: '100%',
+            }}
+          >
+            {/* Current Position - Mobile */}
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#e0e0e0',
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}
+            >
+              Current Position: #{currentPosition}
+            </Typography>
+
+            {/* Navigation Arrows - Mobile */}
+            <Stack
+              direction="row"
+              spacing={2}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <IconButton
+                onClick={() => handleNavigateRelative('prev')}
+                disabled={isNavigating || isLoadingHistorical}
+                sx={{
+                  color: '#9c27b0',
+                  '&:hover': { backgroundColor: 'rgba(156, 39, 176, 0.1)' },
+                }}
+              >
+                <NavigateBefore />
+              </IconButton>
+
+              <IconButton
+                onClick={() => handleNavigateRelative('next')}
+                disabled={isNavigating || isLoadingHistorical}
+                sx={{
+                  color: '#9c27b0',
+                  '&:hover': { backgroundColor: 'rgba(156, 39, 176, 0.1)' },
+                }}
+              >
+                <NavigateNext />
+              </IconButton>
+            </Stack>
+
+            {/* Search Bar - Mobile */}
+            <TextField
+              size="small"
+              placeholder="Block number..."
+              value={searchBlock}
+              onChange={e => setSearchBlock(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={isNavigating || isLoadingHistorical}
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleSearch}
+                      disabled={isNavigating || isLoadingHistorical}
+                      edge="end"
+                      sx={{ color: '#9c27b0' }}
+                    >
+                      {isNavigating ? (
+                        <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                      ) : (
+                        <Search />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                sx: {
+                  color: '#e0e0e0',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#9c27b0',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#ba68c8',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#ba68c8',
+                  },
+                },
+              }}
+              sx={{
                 '& .MuiInputBase-input': {
                   color: '#e0e0e0',
                 },

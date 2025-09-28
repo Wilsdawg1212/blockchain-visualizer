@@ -13,7 +13,12 @@ export default function Info() {
     <Box p={3} sx={{ backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
       <Typography
         variant="h4"
-        sx={{ color: '#e0e0e0', fontWeight: 'bold', mb: 4 }}
+        sx={{
+          color: '#e0e0e0',
+          fontWeight: 'bold',
+          mb: 4,
+          textAlign: 'center',
+        }}
       >
         About Base Viz
       </Typography>
