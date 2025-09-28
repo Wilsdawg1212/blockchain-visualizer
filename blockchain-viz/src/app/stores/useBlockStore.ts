@@ -274,6 +274,8 @@ export const useBlocksStore = create<BlocksState>()(
         try {
           // Load blocks in batches with delays to avoid rate limiting
           const batchSize = 20; // Load more blocks per batch
+          let allLoadedBlocks: RawBlock[] = [];
+
           for (let i = 0; i < blocksToLoad.length; i += batchSize) {
             const batch = blocksToLoad.slice(i, i + batchSize);
             console.log('📦 Loading batch:', batch);
@@ -286,71 +288,77 @@ export const useBlocksStore = create<BlocksState>()(
               rawBlocks.length
             );
 
+            // Accumulate all blocks
+            allLoadedBlocks = [...allLoadedBlocks, ...rawBlocks];
+
             // Add a small delay between batches to avoid rate limiting
             if (i + batchSize < blocksToLoad.length) {
               await new Promise(resolve => setTimeout(resolve, 200)); // 200ms delay
             }
-
-            set(s => {
-              const newBlocks = rawBlocks.map(rawBlockToUiBlock);
-              console.log(
-                '🔄 Converting raw blocks to UI blocks:',
-                newBlocks.map(b => b.number)
-              );
-
-              // Since we cleared blocks earlier if needed, we can just use the new blocks
-              // Sort by block number descending (newest first)
-              const sortedBlocks = newBlocks.sort(
-                (a, b) => b.number - a.number
-              );
-
-              console.log(
-                '🔗 Final blocks count:',
-                sortedBlocks.length,
-                'sorted by number desc'
-              );
-
-              // Ensure we don't exceed maxBlocks
-              const finalBlocks = sortedBlocks.slice(0, s.maxBlocks);
-
-              // Debug: Check if our searched block is in the final result
-              const searchedBlockExists = finalBlocks.some(
-                b => b.number === centerBlock
-              );
-              console.log(
-                `Final result: total blocks=${finalBlocks.length}, searched block ${centerBlock} exists: ${searchedBlockExists}`
-              );
-              console.log(
-                'Final blocks loaded:',
-                finalBlocks.map(b => b.number)
-              );
-
-              // Ensure the searched block is always included
-              const finalBlocksWithSearched = finalBlocks;
-              if (!searchedBlockExists) {
-                console.log(
-                  `⚠️ Searched block ${centerBlock} not found in final blocks - this should not happen`
-                );
-                console.log(
-                  `Available blocks: ${finalBlocks.map(b => b.number).join(', ')}`
-                );
-              }
-
-              console.log(
-                '🎯 Final state update - blocks:',
-                finalBlocksWithSearched.length,
-                'currentPosition:',
-                centerBlock,
-                'isLiveMode: false'
-              );
-
-              return {
-                blocks: finalBlocksWithSearched,
-                currentPosition: centerBlock,
-                isLiveMode: false,
-              };
-            });
           }
+
+          // Now set all blocks at once
+          console.log(
+            '🎯 Setting all loaded blocks at once:',
+            allLoadedBlocks.length
+          );
+          set(s => {
+            const newBlocks = allLoadedBlocks.map(rawBlockToUiBlock);
+            console.log(
+              '🔄 Converting all raw blocks to UI blocks:',
+              newBlocks.map(b => b.number)
+            );
+
+            // Since we cleared blocks earlier if needed, we can just use the new blocks
+            // Sort by block number descending (newest first)
+            const sortedBlocks = newBlocks.sort((a, b) => b.number - a.number);
+
+            console.log(
+              '🔗 Final blocks count:',
+              sortedBlocks.length,
+              'sorted by number desc'
+            );
+
+            // Ensure we don't exceed maxBlocks
+            const finalBlocks = sortedBlocks.slice(0, s.maxBlocks);
+
+            // Debug: Check if our searched block is in the final result
+            const searchedBlockExists = finalBlocks.some(
+              b => b.number === centerBlock
+            );
+            console.log(
+              `Final result: total blocks=${finalBlocks.length}, searched block ${centerBlock} exists: ${searchedBlockExists}`
+            );
+            console.log(
+              'Final blocks loaded:',
+              finalBlocks.map(b => b.number)
+            );
+
+            // Ensure the searched block is always included
+            const finalBlocksWithSearched = finalBlocks;
+            if (!searchedBlockExists) {
+              console.log(
+                `⚠️ Searched block ${centerBlock} not found in final blocks - this should not happen`
+              );
+              console.log(
+                `Available blocks: ${finalBlocks.map(b => b.number).join(', ')}`
+              );
+            }
+
+            console.log(
+              '🎯 Final state update - blocks:',
+              finalBlocksWithSearched.length,
+              'currentPosition:',
+              centerBlock,
+              'isLiveMode: false'
+            );
+
+            return {
+              blocks: finalBlocksWithSearched,
+              currentPosition: centerBlock,
+              isLiveMode: false,
+            };
+          });
         } catch (error) {
           console.error('Failed to load block window:', error);
 

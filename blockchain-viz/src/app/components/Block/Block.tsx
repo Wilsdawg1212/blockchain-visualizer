@@ -150,7 +150,7 @@ export default function Block({
               mb: 1,
             }}
           >
-            {block.hash.slice(0, 8)}...{block.hash.slice(-6)}
+            {'#' + block.number}
           </Typography>
 
           {/* Transaction Count */}
