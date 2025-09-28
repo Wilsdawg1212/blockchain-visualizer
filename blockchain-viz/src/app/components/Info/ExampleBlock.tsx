@@ -163,9 +163,7 @@ export default function ExampleBlock() {
         </Box>
 
         {/* Field Explanations */}
-        <Accordion
-          sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}
-        >
+        <Accordion sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMore sx={{ color: '#9c27b0' }} />}
           >
@@ -176,15 +174,13 @@ export default function ExampleBlock() {
           <AccordionDetails>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
               The sequential number of this block in the blockchain. Each new
-              block increments this number by 1. This is the primary
-              identifier for locating and referencing blocks.
+              block increments this number by 1. This is the primary identifier
+              for locating and referencing blocks.
             </Typography>
           </AccordionDetails>
         </Accordion>
 
-        <Accordion
-          sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}
-        >
+        <Accordion sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMore sx={{ color: '#9c27b0' }} />}
           >
@@ -194,17 +190,15 @@ export default function ExampleBlock() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              A unique cryptographic fingerprint of the block's contents. This
-              hash is calculated from all the data in the block and serves as
-              a tamper-proof identifier. Even a tiny change in the block would
-              produce a completely different hash.
+              A unique cryptographic fingerprint of the block&apos;s contents.
+              This hash is calculated from all the data in the block and serves
+              as a tamper-proof identifier. Even a tiny change in the block
+              would produce a completely different hash.
             </Typography>
           </AccordionDetails>
         </Accordion>
 
-        <Accordion
-          sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}
-        >
+        <Accordion sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMore sx={{ color: '#9c27b0' }} />}
           >
@@ -222,9 +216,7 @@ export default function ExampleBlock() {
           </AccordionDetails>
         </Accordion>
 
-        <Accordion
-          sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}
-        >
+        <Accordion sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMore sx={{ color: '#9c27b0' }} />}
           >
@@ -234,20 +226,18 @@ export default function ExampleBlock() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              <strong>Gas Used:</strong> The total computational work
-              performed by all transactions in this block.
+              <strong>Gas Used:</strong> The total computational work performed
+              by all transactions in this block.
               <br />
               <br />
               <strong>Base Fee:</strong> The minimum fee (in gwei) required to
-              include a transaction in this block. This fee adjusts
-              dynamically based on network congestion.
+              include a transaction in this block. This fee adjusts dynamically
+              based on network congestion.
             </Typography>
           </AccordionDetails>
         </Accordion>
 
-        <Accordion
-          sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}
-        >
+        <Accordion sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMore sx={{ color: '#9c27b0' }} />}
           >
@@ -257,17 +247,15 @@ export default function ExampleBlock() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              Shows which Ethereum (Layer 1) block this Base (Layer 2) block
-              is derived from. This creates a connection between the two
-              blockchains, allowing Base to inherit Ethereum's security while
-              providing faster and cheaper transactions.
+              Shows which Ethereum (Layer 1) block this Base (Layer 2) block is
+              derived from. This creates a connection between the two
+              blockchains, allowing Base to inherit Ethereum&apos;s security
+              while providing faster and cheaper transactions.
             </Typography>
           </AccordionDetails>
         </Accordion>
 
-        <Accordion
-          sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}
-        >
+        <Accordion sx={{ backgroundColor: '#1a1a1a', color: '#e0e0e0', mb: 2 }}>
           <AccordionSummary
             expandIcon={<ExpandMore sx={{ color: '#9c27b0' }} />}
           >
@@ -277,10 +265,10 @@ export default function ExampleBlock() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              The number of blocks that have been added after this block.
-              Higher confirmations mean the block is more secure and less
-              likely to be reorganized. Blocks with 5+ confirmations are
-              generally considered final.
+              The number of blocks that have been added after this block. Higher
+              confirmations mean the block is more secure and less likely to be
+              reorganized. Blocks with 5+ confirmations are generally considered
+              final.
             </Typography>
           </AccordionDetails>
         </Accordion>
@@ -295,9 +283,9 @@ export default function ExampleBlock() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              The exact time when this block was mined, displayed in local
-              time format. This helps you understand the timing and sequence
-              of blockchain activity.
+              The exact time when this block was mined, displayed in local time
+              format. This helps you understand the timing and sequence of
+              blockchain activity.
             </Typography>
           </AccordionDetails>
         </Accordion>

@@ -15,7 +15,7 @@ export default function Info() {
         variant="h4"
         sx={{ color: '#e0e0e0', fontWeight: 'bold', mb: 4 }}
       >
-        Base Blockchain Visualizer
+        About Base Viz
       </Typography>
 
       <ProjectOverview />

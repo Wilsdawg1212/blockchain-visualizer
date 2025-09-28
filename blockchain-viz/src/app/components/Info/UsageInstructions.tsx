@@ -18,8 +18,8 @@ export default function UsageInstructions() {
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
               The application starts in live mode, automatically showing new
-              blocks as they're added to the blockchain. Toggle the "Live
-              Mode" switch to pause real-time updates.
+              blocks as they&apos;re added to the blockchain. Toggle the
+              &quot;Live Mode&quot; switch to pause real-time updates.
             </Typography>
           </Box>
 
@@ -39,9 +39,9 @@ export default function UsageInstructions() {
               3. Navigate Through History
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              Use the arrow buttons to move forward and backward through
-              blocks. The current block is highlighted with a purple border
-              and "CURRENT" indicator.
+              Use the arrow buttons to move forward and backward through blocks.
+              The current block is highlighted with a purple border and
+              &quot;CURRENT&quot; indicator.
             </Typography>
           </Box>
 
@@ -61,8 +61,8 @@ export default function UsageInstructions() {
               5. Reset and Start Over
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-              Use the "Reset" button to clear the current view and return to
-              live mode with the latest blocks.
+              Use the &quot;Reset&quot; button to clear the current view and
+              return to live mode with the latest blocks.
             </Typography>
           </Box>
         </Stack>

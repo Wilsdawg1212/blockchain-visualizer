@@ -28,7 +28,7 @@ export default function HowItWorks() {
               Live Mode
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0', mb: 2 }}>
-              Automatically tracks new blocks as they're added to the
+              Automatically tracks new blocks as they&apos;re added to the
               blockchain. The visualization updates in real-time, showing the
               latest blocks and their confirmations.
             </Typography>
@@ -37,8 +37,8 @@ export default function HowItWorks() {
               Historical Mode
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0', mb: 2 }}>
-              Allows you to explore past blocks by searching for specific
-              block numbers or navigating through the blockchain history.
+              Allows you to explore past blocks by searching for specific block
+              numbers or navigating through the blockchain history.
             </Typography>
           </Grid>
 
@@ -47,9 +47,9 @@ export default function HowItWorks() {
               L1/L2 Integration
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0', mb: 2 }}>
-              Shows the relationship between Ethereum (L1) blocks and Base
-              (L2) blocks. Each L2 block is derived from an L1 block, creating
-              a hierarchical structure.
+              Shows the relationship between Ethereum (L1) blocks and Base (L2)
+              blocks. Each L2 block is derived from an L1 block, creating a
+              hierarchical structure.
             </Typography>
 
             <Typography variant="h6" sx={{ color: '#e0e0e0', mb: 1 }}>

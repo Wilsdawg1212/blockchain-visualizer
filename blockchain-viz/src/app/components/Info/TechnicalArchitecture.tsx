@@ -28,9 +28,9 @@ export default function TechnicalArchitecture() {
               Frontend
             </Typography>
             <Typography variant="body2" sx={{ color: '#e0e0e0', mb: 2 }}>
-              Built with Next.js 15, React 19, and Material-UI. Uses Zustand
-              for state management to efficiently handle real-time block data
-              and user navigation state.
+              Built with Next.js 15, React 19, and Material-UI. Uses Zustand for
+              state management to efficiently handle real-time block data and
+              user navigation state.
             </Typography>
 
             <Typography variant="h6" sx={{ color: '#e0e0e0', mb: 1 }}>

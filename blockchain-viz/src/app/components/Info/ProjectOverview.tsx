@@ -25,11 +25,11 @@ export default function ProjectOverview() {
           variant="body1"
           sx={{ color: '#e0e0e0', mb: 2, lineHeight: 1.6 }}
         >
-          The Base Blockchain Visualizer is a real-time visualization tool
-          that helps you explore and understand the Base blockchain (an
-          Ethereum Layer 2 solution). It provides an intuitive interface to
-          view blocks, track transactions, and understand the relationship
-          between Layer 1 (Ethereum) and Layer 2 (Base) blocks.
+          The Base Blockchain Visualizer is a real-time visualization tool that
+          helps you explore and understand the Base blockchain (an Ethereum
+          Layer 2 solution). It provides an intuitive interface to view blocks,
+          track transactions, and understand the relationship between Layer 1
+          (Ethereum) and Layer 2 (Base) blocks.
         </Typography>
 
         <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mt: 2 }}>
