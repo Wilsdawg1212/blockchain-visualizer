@@ -13,11 +13,23 @@ import {
   Button,
 } from '@mui/material';
 import { Search, Refresh } from '@mui/icons-material';
-import { useBlocksStore, UiBlock } from '../stores/useBlockStore';
+import {
+  useBlocksStore,
+  UiBlock,
+  uiBlockToRawBlock,
+} from '../stores/useBlockStore';
+import BlockDetailsPopup from './Block/BlockDetailsPopup';
 
 export default function SimpleBlockViewer() {
-  const { navigateToBlock, isLoadingHistorical, currentPosition, blocks } =
-    useBlocksStore();
+  const {
+    navigateToBlock,
+    isLoadingHistorical,
+    currentPosition,
+    blocks,
+    tipNumber,
+    setCurrentPosition,
+    setLiveMode,
+  } = useBlocksStore();
   const [searchBlock, setSearchBlock] = React.useState('');
   const [isNavigating, setIsNavigating] = React.useState(false);
   const [searchedBlock, setSearchedBlock] = React.useState<UiBlock | null>(
@@ -26,6 +38,10 @@ export default function SimpleBlockViewer() {
   const [lastSearchedNumber, setLastSearchedNumber] = React.useState<
     number | null
   >(null);
+  const [searchError, setSearchError] = React.useState<string | null>(null);
+
+  // Block details popup state
+  const [popupOpen, setPopupOpen] = React.useState(false);
 
   // Watch for when the searched block appears in the store
   React.useEffect(() => {
@@ -50,6 +66,8 @@ export default function SimpleBlockViewer() {
         blockNum
       );
       setIsNavigating(true);
+      setSearchError(null); // Clear any previous errors
+
       try {
         console.log(
           '🚀 SimpleBlockViewer - Calling navigateToBlock with:',
@@ -69,11 +87,16 @@ export default function SimpleBlockViewer() {
         );
       } catch (error) {
         console.error('❌ SimpleBlockViewer - Error during navigation:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error occurred';
+        setSearchError(errorMessage);
       } finally {
         setIsNavigating(false);
         setSearchBlock('');
         console.log('🏁 SimpleBlockViewer - Search completed');
       }
+    } else {
+      setSearchError('Please enter a valid block number');
     }
   };
 
@@ -87,6 +110,22 @@ export default function SimpleBlockViewer() {
     setSearchedBlock(null);
     setSearchBlock('');
     setLastSearchedNumber(null);
+    setSearchError(null);
+  };
+
+  const handleBlockClick = () => {
+    if (searchedBlock) {
+      // Set the searched block as current position and switch to historical mode
+      setCurrentPosition(searchedBlock.number);
+      setLiveMode(false);
+
+      // Open the popup with block details
+      setPopupOpen(true);
+    }
+  };
+
+  const handleClosePopup = () => {
+    setPopupOpen(false);
   };
 
   return (
@@ -205,6 +244,27 @@ export default function SimpleBlockViewer() {
         </Box>
       )}
 
+      {/* Error Display */}
+      {searchError && (
+        <Card
+          variant="outlined"
+          sx={{
+            mb: 3,
+            backgroundColor: '#2d1b1b',
+            borderColor: '#d32f2f',
+          }}
+        >
+          <CardContent>
+            <Typography
+              variant="body2"
+              sx={{ color: '#f44336', textAlign: 'center' }}
+            >
+              {searchError}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Debug Info */}
       <Card
         variant="outlined"
@@ -243,10 +303,18 @@ export default function SimpleBlockViewer() {
       {searchedBlock ? (
         <Card
           variant="outlined"
+          onClick={handleBlockClick}
           sx={{
             backgroundColor: '#1a0a2e',
             borderColor: '#9c27b0',
             borderWidth: 3,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 4px 25px rgba(156, 39, 176, 0.4)',
+              borderColor: '#ba68c8',
+            },
           }}
         >
           <CardContent>
@@ -273,6 +341,18 @@ export default function SimpleBlockViewer() {
                 </Typography>
               )}
             </Stack>
+            <Typography
+              variant="caption"
+              sx={{
+                color: '#ba68c8',
+                mt: 2,
+                display: 'block',
+                textAlign: 'center',
+                fontStyle: 'italic',
+              }}
+            >
+              Click to select this block and view detailed information
+            </Typography>
           </CardContent>
         </Card>
       ) : (
@@ -294,6 +374,17 @@ export default function SimpleBlockViewer() {
             </Typography>
           </CardContent>
         </Card>
+      )}
+
+      {/* Block Details Popup */}
+      {searchedBlock && (
+        <BlockDetailsPopup
+          open={popupOpen}
+          onClose={handleClosePopup}
+          block={searchedBlock}
+          rawBlock={uiBlockToRawBlock(searchedBlock)}
+          confirmations={Math.max(0, tipNumber - searchedBlock.number)}
+        />
       )}
     </Box>
   );

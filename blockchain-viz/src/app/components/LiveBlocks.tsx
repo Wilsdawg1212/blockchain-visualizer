@@ -25,11 +25,11 @@ import {
   Search,
   Refresh,
 } from '@mui/icons-material';
-import { uiBlockToRawBlock } from '../stores/useBlockStore';
+import { uiBlockToRawBlock, UiBlock, RawBlock } from '../stores/useBlockStore';
 import Block from './Block/Block';
+import BlockDetailsPopup from './Block/BlockDetailsPopup';
 
 export default function LiveBlocks() {
-  useLiveBlocks();
   const {
     getVisibleBlocks,
     isLiveMode,
@@ -40,10 +40,24 @@ export default function LiveBlocks() {
     navigateRelative,
     navigateToBlock,
     reset,
+    setCurrentPosition,
   } = useBlocksStore();
+
+  // Always call the hook, but it will be conditional internally
+  useLiveBlocks();
 
   const [searchBlock, setSearchBlock] = React.useState('');
   const [isNavigating, setIsNavigating] = React.useState(false);
+  const [searchError, setSearchError] = React.useState<string | null>(null);
+
+  // Block details popup state
+  const [selectedBlock, setSelectedBlock] = React.useState<UiBlock | null>(
+    null
+  );
+  const [selectedRawBlock, setSelectedRawBlock] =
+    React.useState<RawBlock | null>(null);
+  const [selectedConfirmations, setSelectedConfirmations] = React.useState(0);
+  const [popupOpen, setPopupOpen] = React.useState(false);
 
   const visible = getVisibleBlocks();
 
@@ -94,17 +108,24 @@ export default function LiveBlocks() {
     if (!isNaN(blockNum)) {
       console.log('🔍 Starting search for block:', blockNum);
       setIsNavigating(true);
+      setSearchError(null); // Clear any previous errors
+
       try {
         console.log('🚀 Calling navigateToBlock with:', blockNum);
         await navigateToBlock(blockNum);
         console.log('✅ navigateToBlock completed for block:', blockNum);
       } catch (error) {
         console.error('❌ Error during navigation:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error occurred';
+        setSearchError(errorMessage);
       } finally {
         setIsNavigating(false);
         setSearchBlock('');
         console.log('🏁 Search completed, navigation state reset');
       }
+    } else {
+      setSearchError('Please enter a valid block number');
     }
   };
 
@@ -144,6 +165,29 @@ export default function LiveBlocks() {
     } finally {
       setIsNavigating(false);
     }
+  };
+
+  const handleBlockClick = (
+    block: UiBlock,
+    rawBlock: RawBlock,
+    confirmations: number
+  ) => {
+    // Set the clicked block as current position and switch to historical mode
+    setCurrentPosition(block.number);
+    setLiveMode(false);
+
+    // Open the popup with block details
+    setSelectedBlock(block);
+    setSelectedRawBlock(rawBlock);
+    setSelectedConfirmations(confirmations);
+    setPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setPopupOpen(false);
+    setSelectedBlock(null);
+    setSelectedRawBlock(null);
+    setSelectedConfirmations(0);
   };
 
   // Find the current block index for centering
@@ -361,6 +405,27 @@ export default function LiveBlocks() {
         </Box>
       )}
 
+      {/* Error Display */}
+      {searchError && (
+        <Card
+          variant="outlined"
+          sx={{
+            mb: 3,
+            backgroundColor: '#2d1b1b',
+            borderColor: '#d32f2f',
+          }}
+        >
+          <CardContent>
+            <Typography
+              variant="body2"
+              sx={{ color: '#f44336', textAlign: 'center' }}
+            >
+              {searchError}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Main Blocks Container */}
       <Box
         sx={{
@@ -453,6 +518,7 @@ export default function LiveBlocks() {
                     confirmations={conf}
                     offsetPx={blockOffset}
                     rawBlock={rawBlock}
+                    onBlockClick={handleBlockClick}
                   />
                 );
               })}
@@ -616,9 +682,20 @@ export default function LiveBlocks() {
       {/* Navigation Instructions */}
       <Box sx={{ mt: 2, textAlign: 'center' }}>
         <Typography variant="body2" sx={{ color: '#e0e0e0' }}>
-          Use the navigation buttons or scroll horizontally to explore blocks
+          Use the navigation buttons or scroll horizontally to explore blocks.
+          Click on any block to select it, view details, and switch to
+          historical mode.
         </Typography>
       </Box>
+
+      {/* Block Details Popup */}
+      <BlockDetailsPopup
+        open={popupOpen}
+        onClose={handleClosePopup}
+        block={selectedBlock}
+        rawBlock={selectedRawBlock}
+        confirmations={selectedConfirmations}
+      />
     </Box>
   );
 }

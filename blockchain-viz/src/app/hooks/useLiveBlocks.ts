@@ -1,6 +1,6 @@
 // app/hooks/useLiveBlocks.ts
 'use client';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useBlocksStore, RawBlock } from '@/app/stores/useBlockStore';
 import { httpClient, wsClient } from '@/app/lib/viemClient';
 import { getL1OriginForL2Block } from '@/app/lib/getL1OriginForL2Block';
@@ -17,10 +17,27 @@ type AnyBlock = {
 };
 
 export default function useLiveBlocks(pollMs = 2000) {
-  const { pushBlock, setTip } = useBlocksStore();
+  const { pushBlock, setTip, isLiveMode } = useBlocksStore();
   const stopPoll = useRef<NodeJS.Timeout | null>(null);
 
+  // Debug: Log when isLiveMode changes
+  React.useEffect(() => {
+    console.log('🔄 useLiveBlocks: isLiveMode changed to:', isLiveMode);
+  }, [isLiveMode]);
+
   useEffect(() => {
+    console.log(
+      '🔄 useLiveBlocks useEffect triggered, isLiveMode:',
+      isLiveMode
+    );
+
+    // Only start live block monitoring if we're in live mode
+    if (!isLiveMode) {
+      console.log('📚 Historical mode: stopping live block monitoring');
+      return;
+    }
+
+    console.log('📺 Live mode: starting live block monitoring');
     let unwatch: (() => void) | undefined;
 
     const onBlock = async (blk: AnyBlock) => {
@@ -62,7 +79,11 @@ export default function useLiveBlocks(pollMs = 2000) {
         ...l1Data,
       };
 
+      // Always update the tip to track the latest block number
       setTip(number);
+
+      // Push the block (we're in live mode since this effect only runs in live mode)
+      console.log('📺 Live mode: pushing block', number);
       pushBlock(rawBlock);
     };
 
@@ -93,6 +114,7 @@ export default function useLiveBlocks(pollMs = 2000) {
     }
 
     return () => {
+      console.log('🛑 Cleaning up live block monitoring');
       try {
         unwatch?.();
       } catch {}
@@ -127,5 +149,5 @@ export default function useLiveBlocks(pollMs = 2000) {
       };
       tick();
     }
-  }, [pollMs, pushBlock, setTip]);
+  }, [pollMs, pushBlock, setTip, isLiveMode]);
 }

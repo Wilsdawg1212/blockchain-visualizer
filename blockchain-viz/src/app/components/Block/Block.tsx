@@ -13,6 +13,11 @@ type BlockProps = {
   confirmations: number;
   offsetPx: number;
   rawBlock: RawBlock;
+  onBlockClick?: (
+    block: UiBlock,
+    rawBlock: RawBlock,
+    confirmations: number
+  ) => void;
 };
 
 function fmtTime(ms: number) {
@@ -25,6 +30,7 @@ export default function Block({
   confirmations,
   offsetPx,
   rawBlock,
+  onBlockClick,
 }: BlockProps) {
   return (
     <Box
@@ -40,6 +46,7 @@ export default function Block({
     >
       <Card
         variant="outlined"
+        onClick={() => onBlockClick?.(block, rawBlock, confirmations)}
         sx={{
           width: '200px',
           height: '180px',
@@ -52,6 +59,30 @@ export default function Block({
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: isCurrentBlock
+              ? '0 4px 25px rgba(156, 39, 176, 0.4)'
+              : '0 4px 15px rgba(0,0,0,0.4)',
+            borderColor: isCurrentBlock ? '#ba68c8' : '#9c27b0',
+          },
+          // Add a subtle animation for current block
+          ...(isCurrentBlock && {
+            animation: 'pulse 2s infinite',
+            '@keyframes pulse': {
+              '0%': {
+                boxShadow: '0 0 20px rgba(156, 39, 176, 0.3)',
+              },
+              '50%': {
+                boxShadow: '0 0 30px rgba(156, 39, 176, 0.5)',
+              },
+              '100%': {
+                boxShadow: '0 0 20px rgba(156, 39, 176, 0.3)',
+              },
+            },
+          }),
         }}
       >
         {/* Block Number at Top */}
