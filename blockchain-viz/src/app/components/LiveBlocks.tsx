@@ -175,6 +175,10 @@ export default function LiveBlocks() {
 
       // Navigate to the middle L2 block
       await navigateToBlock(middleBlockNumber);
+    } catch (error) {
+      // Silently handle errors when clicking L1 blocks - don't show error popup to user
+      console.warn('Failed to navigate to L1 block:', l1Block.l1Number, error);
+      // Keep the L1 block selected for visual feedback even if navigation fails
     } finally {
       setIsNavigating(false);
     }

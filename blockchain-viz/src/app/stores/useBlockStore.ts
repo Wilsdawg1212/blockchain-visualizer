@@ -380,8 +380,8 @@ export const useBlocksStore = create<BlocksState>()(
             }
           }
 
-          // Show error to user
-          alert(errorMessage);
+          // Log error for debugging but don't show popup to user
+          console.error('Block loading error:', errorMessage);
           throw error; // Re-throw to let the calling code handle it
         } finally {
           console.log('🏁 Setting loading state to false');
