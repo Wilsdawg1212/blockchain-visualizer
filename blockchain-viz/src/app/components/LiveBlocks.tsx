@@ -28,6 +28,7 @@ import {
 import { uiBlockToRawBlock, UiBlock, RawBlock } from '../stores/useBlockStore';
 import Block from './Block/Block';
 import BlockDetailsPopup from './Block/BlockDetailsPopup';
+import L1Blocks from './L1Blocks/L1Blocks';
 
 export default function LiveBlocks() {
   const {
@@ -216,24 +217,6 @@ export default function LiveBlocks() {
 
   // Find the current block index for centering
   const currentBlockIndex = blocks.findIndex(b => b.number === currentPosition);
-
-  // Group L1 blocks to avoid duplicates
-  const l1BlocksMap = new Map<
-    number,
-    { l1Number: number; l1Hash: string; l2Blocks: typeof blocks }
-  >();
-  blocks.forEach(block => {
-    if (block.l1Number && block.l1Hash) {
-      if (!l1BlocksMap.has(block.l1Number)) {
-        l1BlocksMap.set(block.l1Number, {
-          l1Number: block.l1Number,
-          l1Hash: block.l1Hash,
-          l2Blocks: [],
-        });
-      }
-      l1BlocksMap.get(block.l1Number)!.l2Blocks.push(block);
-    }
-  });
 
   return (
     <Box p={3} sx={{ backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
@@ -740,180 +723,13 @@ export default function LiveBlocks() {
       </Box>
 
       {/* L1 Blocks Section - Below L2 blocks */}
-      {l1BlocksMap.size > 0 && (
-        <Box sx={{ mt: 3 }}>
-          <Typography
-            variant="h6"
-            sx={{ color: '#e0e0e0', mb: 2, textAlign: 'center' }}
-          >
-            Connected L1 Blocks (Ethereum)
-          </Typography>
-          <Box
-            sx={{
-              position: 'relative',
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              height: '150px',
-              backgroundColor: '#0f0f0f',
-              borderRadius: '8px',
-              border: '1px solid #9c27b0',
-              '&::-webkit-scrollbar': {
-                height: '8px',
-              },
-              '&::-webkit-scrollbar-track': {
-                backgroundColor: '#1a1a1a',
-                borderRadius: '4px',
-              },
-              '&::-webkit-scrollbar-thumb': {
-                backgroundColor: '#9c27b0',
-                borderRadius: '4px',
-                '&:hover': {
-                  backgroundColor: '#ba68c8',
-                },
-              },
-            }}
-          >
-            <Box
-              sx={{
-                position: 'relative',
-                height: '100%',
-                minWidth: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center',
-                  height: '100%',
-                  width: '100%',
-                  justifyContent: 'center',
-                }}
-              >
-                {Array.from(l1BlocksMap.values()).map((l1Block, index) => {
-                  const isConnectedToCurrent = l1Block.l2Blocks.some(
-                    l2Block => l2Block.number === currentPosition
-                  );
-                  const isSelected = selectedL1Block === l1Block.l1Number;
-
-                  // Calculate position for L1 blocks
-                  const l1BlockOffset =
-                    (index - Math.floor(l1BlocksMap.size / 2)) * 180;
-
-                  return (
-                    <Box
-                      key={l1Block.l1Number}
-                      sx={{
-                        position: 'absolute',
-                        left: '50%',
-                        top: '50%',
-                        transform: `translate(-50%, -50%) translateX(${l1BlockOffset}px)`,
-                        zIndex: 2,
-                        transition: 'transform 0.3s ease-in-out',
-                      }}
-                    >
-                      {/* Circular L1 Block */}
-                      <Box
-                        onClick={() => handleL1BlockClick(l1Block)}
-                        sx={{
-                          width: '120px',
-                          height: '120px',
-                          backgroundColor: isSelected
-                            ? '#2e1065' // Darker purple when selected
-                            : isConnectedToCurrent
-                              ? '#1a0a2e'
-                              : '#1a1a1a',
-                          border: isSelected
-                            ? '4px solid #e91e63' // Pink border when selected
-                            : isConnectedToCurrent
-                              ? '3px solid #9c27b0'
-                              : '2px solid #4a4a4a',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: isSelected
-                            ? '0 0 30px rgba(233, 30, 99, 0.6)' // Pink glow when selected
-                            : isConnectedToCurrent
-                              ? '0 0 20px rgba(156, 39, 176, 0.4)'
-                              : '0 2px 8px rgba(0,0,0,0.3)',
-                          position: 'relative',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease',
-                          transform: isSelected ? 'scale(1.1)' : 'scale(1)', // Slightly larger when selected
-                          '&:hover': {
-                            transform: isSelected
-                              ? 'scale(1.15)'
-                              : 'scale(1.05)',
-                            boxShadow: isSelected
-                              ? '0 0 35px rgba(233, 30, 99, 0.8)'
-                              : '0 0 25px rgba(156, 39, 176, 0.6)',
-                          },
-                        }}
-                      >
-                        {/* L1 Label */}
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: isSelected
-                              ? '#f48fb1' // Light pink when selected
-                              : isConnectedToCurrent
-                                ? '#ba68c8'
-                                : '#e0e0e0',
-                            fontSize: '8px',
-                            fontWeight: 'bold',
-                            mb: 0.5,
-                          }}
-                        >
-                          L1
-                        </Typography>
-
-                        {/* Block Number */}
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: isSelected
-                              ? '#f48fb1' // Light pink when selected
-                              : isConnectedToCurrent
-                                ? '#ba68c8'
-                                : '#e0e0e0',
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                            fontFamily: 'monospace',
-                          }}
-                        >
-                          #{l1Block.l1Number}
-                        </Typography>
-
-                        {/* Connection Count */}
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: isSelected
-                              ? '#f48fb1' // Light pink when selected
-                              : isConnectedToCurrent
-                                ? '#ba68c8'
-                                : '#e0e0e0',
-                            fontSize: '8px',
-                            textAlign: 'center',
-                            mt: 0.5,
-                          }}
-                        >
-                          {l1Block.l2Blocks.length} L2
-                        </Typography>
-                      </Box>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      )}
+      <L1Blocks
+        blocks={blocks}
+        currentPosition={currentPosition}
+        selectedL1Block={selectedL1Block}
+        onL1BlockClick={handleL1BlockClick}
+        onBackgroundClick={handleBackgroundClick}
+      />
 
       {/* Navigation Instructions */}
       <Box sx={{ mt: 2, textAlign: 'center' }}>

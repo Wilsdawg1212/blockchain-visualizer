@@ -155,7 +155,7 @@ export default function Block({
             backgroundColor: isCurrentBlock ? '#1a0a2e' : '#1a1a1a',
           }}
         >
-          {/* Hash (truncated) */}
+          {/* Number */}
           <Typography
             variant="caption"
             sx={{
@@ -235,7 +235,7 @@ export default function Block({
           )}
 
           {/* Confirmations */}
-          <Box sx={{ textAlign: 'center', mb: 1 }}>
+          <Box sx={{ textAlign: 'center', mb: 0.5 }}>
             <Chip
               label={`${confirmations} confs`}
               size="small"
@@ -265,7 +265,7 @@ export default function Block({
               textAlign: 'center',
               fontFamily: 'monospace',
               display: 'block',
-              mt: 0.5,
+              mt: 0.25,
             }}
           >
             {fmtTime(block.timestampMs)}
