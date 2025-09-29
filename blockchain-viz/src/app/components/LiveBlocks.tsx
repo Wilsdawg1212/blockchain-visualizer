@@ -59,6 +59,11 @@ export default function LiveBlocks() {
   const [selectedConfirmations, setSelectedConfirmations] = React.useState(0);
   const [popupOpen, setPopupOpen] = React.useState(false);
 
+  // L1 block highlighting state
+  const [selectedL1Block, setSelectedL1Block] = React.useState<number | null>(
+    null
+  );
+
   const visible = getVisibleBlocks();
 
   // Debug: Log tip number changes
@@ -151,6 +156,14 @@ export default function LiveBlocks() {
   }) => {
     if (l1Block.l2Blocks.length === 0) return;
 
+    // Toggle L1 block selection for highlighting
+    if (selectedL1Block === l1Block.l1Number) {
+      setSelectedL1Block(null); // Deselect if same block is clicked
+      return;
+    } else {
+      setSelectedL1Block(l1Block.l1Number); // Select the L1 block
+    }
+
     setIsNavigating(true);
     try {
       // Calculate the middle block number from the associated L2 blocks
@@ -188,6 +201,13 @@ export default function LiveBlocks() {
     setSelectedBlock(null);
     setSelectedRawBlock(null);
     setSelectedConfirmations(0);
+  };
+
+  const handleBackgroundClick = (event: React.MouseEvent) => {
+    // Clear L1 selection when clicking on background
+    if (event.target === event.currentTarget) {
+      setSelectedL1Block(null);
+    }
   };
 
   // Find the current block index for centering
@@ -608,6 +628,7 @@ export default function LiveBlocks() {
 
       {/* Main Blocks Container */}
       <Box
+        onClick={handleBackgroundClick}
         sx={{
           position: 'relative',
           overflowX: 'auto',
@@ -676,6 +697,12 @@ export default function LiveBlocks() {
               {blocks.map((b, index) => {
                 const conf = Math.max(0, tipNumber - b.number);
                 const isCurrentBlock = b.number === currentPosition;
+                // Check if this L2 block belongs to the selected L1 block
+                const isHighlighted =
+                  selectedL1Block !== null && b.l1Number === selectedL1Block;
+                // If L1 is selected, current block should use highlighting instead of current styling
+                const shouldUseCurrentStyling =
+                  isCurrentBlock && !isHighlighted;
 
                 // Debug: Log confirmation calculation
                 if (index < 2) {
@@ -694,7 +721,8 @@ export default function LiveBlocks() {
                   <Block
                     key={b.hash} // <-- key belongs here, not inside child
                     block={b}
-                    isCurrentBlock={isCurrentBlock}
+                    isCurrentBlock={shouldUseCurrentStyling}
+                    isHighlighted={isHighlighted}
                     confirmations={conf}
                     offsetPx={blockOffset}
                     rawBlock={rawBlock}
@@ -765,6 +793,7 @@ export default function LiveBlocks() {
                   const isConnectedToCurrent = l1Block.l2Blocks.some(
                     l2Block => l2Block.number === currentPosition
                   );
+                  const isSelected = selectedL1Block === l1Block.l1Number;
 
                   // Calculate position for L1 blocks
                   const l1BlockOffset =
@@ -788,26 +817,37 @@ export default function LiveBlocks() {
                         sx={{
                           width: '120px',
                           height: '120px',
-                          backgroundColor: isConnectedToCurrent
-                            ? '#1a0a2e'
-                            : '#1a1a1a',
-                          border: isConnectedToCurrent
-                            ? '3px solid #9c27b0'
-                            : '2px solid #4a4a4a',
+                          backgroundColor: isSelected
+                            ? '#2e1065' // Darker purple when selected
+                            : isConnectedToCurrent
+                              ? '#1a0a2e'
+                              : '#1a1a1a',
+                          border: isSelected
+                            ? '4px solid #e91e63' // Pink border when selected
+                            : isConnectedToCurrent
+                              ? '3px solid #9c27b0'
+                              : '2px solid #4a4a4a',
                           borderRadius: '50%',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          boxShadow: isConnectedToCurrent
-                            ? '0 0 20px rgba(156, 39, 176, 0.4)'
-                            : '0 2px 8px rgba(0,0,0,0.3)',
+                          boxShadow: isSelected
+                            ? '0 0 30px rgba(233, 30, 99, 0.6)' // Pink glow when selected
+                            : isConnectedToCurrent
+                              ? '0 0 20px rgba(156, 39, 176, 0.4)'
+                              : '0 2px 8px rgba(0,0,0,0.3)',
                           position: 'relative',
                           cursor: 'pointer',
                           transition: 'all 0.3s ease',
+                          transform: isSelected ? 'scale(1.1)' : 'scale(1)', // Slightly larger when selected
                           '&:hover': {
-                            transform: 'scale(1.05)',
-                            boxShadow: '0 0 25px rgba(156, 39, 176, 0.6)',
+                            transform: isSelected
+                              ? 'scale(1.15)'
+                              : 'scale(1.05)',
+                            boxShadow: isSelected
+                              ? '0 0 35px rgba(233, 30, 99, 0.8)'
+                              : '0 0 25px rgba(156, 39, 176, 0.6)',
                           },
                         }}
                       >
@@ -815,7 +855,11 @@ export default function LiveBlocks() {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: isConnectedToCurrent ? '#ba68c8' : '#e0e0e0',
+                            color: isSelected
+                              ? '#f48fb1' // Light pink when selected
+                              : isConnectedToCurrent
+                                ? '#ba68c8'
+                                : '#e0e0e0',
                             fontSize: '8px',
                             fontWeight: 'bold',
                             mb: 0.5,
@@ -828,7 +872,11 @@ export default function LiveBlocks() {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: isConnectedToCurrent ? '#ba68c8' : '#e0e0e0',
+                            color: isSelected
+                              ? '#f48fb1' // Light pink when selected
+                              : isConnectedToCurrent
+                                ? '#ba68c8'
+                                : '#e0e0e0',
                             fontSize: '12px',
                             fontWeight: 'bold',
                             fontFamily: 'monospace',
@@ -841,7 +889,11 @@ export default function LiveBlocks() {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: isConnectedToCurrent ? '#ba68c8' : '#e0e0e0',
+                            color: isSelected
+                              ? '#f48fb1' // Light pink when selected
+                              : isConnectedToCurrent
+                                ? '#ba68c8'
+                                : '#e0e0e0',
                             fontSize: '8px',
                             textAlign: 'center',
                             mt: 0.5,

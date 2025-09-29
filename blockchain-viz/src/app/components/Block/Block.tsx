@@ -10,6 +10,7 @@ const CONFIRMATIONS_TARGET = 5;
 type BlockProps = {
   block: UiBlock;
   isCurrentBlock: boolean;
+  isHighlighted?: boolean;
   confirmations: number;
   offsetPx: number;
   rawBlock: RawBlock;
@@ -27,6 +28,7 @@ function fmtTime(ms: number) {
 export default function Block({
   block,
   isCurrentBlock,
+  isHighlighted = false,
   confirmations,
   offsetPx,
   rawBlock,
@@ -50,12 +52,22 @@ export default function Block({
         sx={{
           width: '200px',
           height: '180px',
-          border: isCurrentBlock ? 3 : 1,
-          borderColor: isCurrentBlock ? '#9c27b0' : '#4a4a4a',
-          backgroundColor: isCurrentBlock ? '#1a0a2e' : '#1a1a1a',
+          border: isCurrentBlock ? 3 : isHighlighted ? 2 : 1,
+          borderColor: isCurrentBlock
+            ? '#9c27b0'
+            : isHighlighted
+              ? '#e91e63'
+              : '#4a4a4a',
+          backgroundColor: isCurrentBlock
+            ? '#1a0a2e'
+            : isHighlighted
+              ? '#2d1b2f'
+              : '#1a1a1a',
           boxShadow: isCurrentBlock
             ? '0 0 20px rgba(156, 39, 176, 0.3)'
-            : '0 2px 8px rgba(0,0,0,0.3)',
+            : isHighlighted
+              ? '0 0 15px rgba(233, 30, 99, 0.3)'
+              : '0 2px 8px rgba(0,0,0,0.3)',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
@@ -65,8 +77,14 @@ export default function Block({
             transform: 'translateY(-2px)',
             boxShadow: isCurrentBlock
               ? '0 4px 25px rgba(156, 39, 176, 0.4)'
-              : '0 4px 15px rgba(0,0,0,0.4)',
-            borderColor: isCurrentBlock ? '#ba68c8' : '#9c27b0',
+              : isHighlighted
+                ? '0 4px 20px rgba(233, 30, 99, 0.4)'
+                : '0 4px 15px rgba(0,0,0,0.4)',
+            borderColor: isCurrentBlock
+              ? '#ba68c8'
+              : isHighlighted
+                ? '#f48fb1'
+                : '#9c27b0',
           },
           // Add a subtle animation for current block
           ...(isCurrentBlock && {
