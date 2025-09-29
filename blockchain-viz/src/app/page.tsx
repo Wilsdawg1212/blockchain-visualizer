@@ -1,6 +1,7 @@
 // app/page.tsx
 import LiveBlocks from '@/app/components/LiveBlocks';
 import Info from '@/app/components/Info/Info';
+import Footer from '@/app/components/Footer';
 
 export const metadata = {
   title: 'Base Viz',
@@ -12,6 +13,7 @@ export default function Page() {
     <>
       <LiveBlocks />
       <Info />
+      <Footer />
     </>
   );
 }

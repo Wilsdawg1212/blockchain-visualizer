@@ -15,6 +15,7 @@ export default function ProjectOverview() {
             mb: 2,
             display: 'flex',
             alignItems: 'center',
+            justifyContent: { xs: 'center', sm: 'flex-start' },
             gap: 1,
           }}
         >
@@ -32,7 +33,16 @@ export default function ProjectOverview() {
           (Ethereum) and Layer 2 (Base) blocks.
         </Typography>
 
-        <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mt: 2 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          flexWrap="wrap"
+          sx={{
+            mt: 2,
+            alignItems: { xs: 'center', sm: 'flex-start' },
+            justifyContent: { xs: 'center', sm: 'flex-start' },
+          }}
+        >
           <Chip
             label="Real-time Block Tracking"
             sx={{
