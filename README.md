@@ -3,7 +3,7 @@ This is a Blockchain Visualization Web tool. It uses the Alchemy and Coinbase AP
 Technologies:
 **Typescript
 **React18
-**MUI: React Component Library
+**MUI: React Component Library\
 **Viem: Typescript Library for use with Etherium blockchain
 **Alchemy API: Blockchain API for live information on chains
 **Coinbase API: Provides information on Blockchain, used for historical lookups in this context
